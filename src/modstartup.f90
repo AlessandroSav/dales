@@ -58,7 +58,7 @@ contains
                                   lwarmstart,startfile,trestart,&
                                   nsv,itot,jtot,kmax,xsize,ysize,xlat,xlon,xyear,xday,xtime,&
                                   lmoist,lcoriol,lpressgrad,igrw_damp,geodamptime,lmomsubs,cu, cv,ifnamopt,fname_options,llsadv,&
-                                  ibas_prf,lambda_crit,iadv_mom,iadv_tke,iadv_thl,iadv_qt,iadv_sv,courant,peclet,ladaptive,author,lnoclouds,lrigidlid,unudge,ntimedep, &
+                                  ibas_prf,lambda_crit,iadv_mom,iadv_tke,iadv_thl,iadv_qt,iadv_sv,courant,peclet,ladaptive,author,lnoclouds,lrigidlid,unudge, &
                                   solver_id, maxiter, tolerance, n_pre, n_post, precond, checknamelisterror
     use modforces,         only : lforce_user
     use modsurfdata,       only : z0,ustin,wtsurf,wqsurf,wsvsurf,ps,thls,isurf
@@ -80,11 +80,11 @@ contains
     use modmpi,            only : initmpi,commwrld,my_real,myid,nprocx,nprocy,mpierr
     use modchem,           only : initchem
     use modversion,        only : git_version
-    
+
     implicit none
     integer :: ierr
     character(256), optional, intent(in) :: path
-    
+
     !declare namelists
     namelist/RUN/ &
         iexpnr,lwarmstart,startfile,ltotruntime, runtime,dtmax,wctime,dtav_glob,timeav_glob,&
@@ -98,7 +98,7 @@ contains
     namelist/PHYSICS/ &
         !cstep z0,ustin,wtsurf,wqsurf,wsvsurf,ps,thls,chi_half,lmoist,isurf,lneutraldrag,&
         z0,ustin,wtsurf,wqsurf,wsvsurf,ps,thls,lmoist,isurf,chi_half,&
-        lcoriol,lpressgrad,igrw_damp,geodamptime,lmomsubs,ltimedep,ltimedepuv,ltimedepsv,ntimedep,irad,timerad,iradiation,rad_ls,rad_longw,rad_shortw,rad_smoke,useMcICA,&
+        lcoriol,lpressgrad,igrw_damp,geodamptime,lmomsubs,ltimedep,ltimedepuv,ltimedepsv,irad,timerad,iradiation,rad_ls,rad_longw,rad_shortw,rad_smoke,useMcICA,&
         rka,dlwtop,dlwbot,sw0,gc,reff,isvsmoke,lforce_user,lcloudshading,lrigidlid,unudge
     namelist/DYNAMICS/ &
         llsadv,  lqlnr, lambda_crit, cu, cv, ibas_prf, iadv_mom, iadv_tke, iadv_thl, iadv_qt, iadv_sv, lnoclouds
@@ -156,7 +156,7 @@ contains
 
     ! Initialize MPI
     call initmpi
-    
+
   !broadcast namelists
     call MPI_BCAST(iexpnr     ,1,MPI_INTEGER,0,commwrld,mpierr)
     call MPI_BCAST(lwarmstart ,1,MPI_LOGICAL,0,commwrld,mpierr)
@@ -256,7 +256,7 @@ contains
     call MPI_BCAST(n_post,1,MPI_INTEGER,0,commwrld,mpierr)
     call MPI_BCAST(tolerance,1,MY_REAL,0,commwrld,mpierr)
     call MPI_BCAST(precond,1,MPI_INTEGER,0,commwrld,mpierr)
-    
+
     call testwctime
     ! Allocate and initialize core modules
     call initglobal
@@ -274,7 +274,7 @@ contains
     call readinitfiles ! moved to obtain the correct btime for the timedependent forcings in case of a warmstart
     call inittimedep !depends on modglobal,modfields, modmpi, modsurf, modradiation
     call initpois ! hypre solver needs grid and baseprofiles
-    
+
     call checkinitvalues
 
 
@@ -349,7 +349,7 @@ contains
     if (myid == 0) then
       select case (isurf)
       case(1)
-      case(2,10)
+      case(2,5,10)
       case(3:4)
         if (wtsurf <-1e10)  stop 'wtsurf not set'
         if (wqsurf <-1e10)  stop 'wqsurf not set'
@@ -384,9 +384,9 @@ contains
                                   ijtot,cu,cv,e12min,dzh,cexpnr,ifinput,lwarmstart,ltotruntime,itrestart,&
                                   trestart, ladaptive,llsadv,tnextrestart,longint
     use modsubgrid,        only : ekm,ekh
-    use modsurfdata,       only : wsvsurf, &
+   use modsurfdata,       only : wsvsurf, &
                                   thls,tskin,tskinm,tsoil,tsoilm,phiw,phiwm,Wl,Wlm,thvs,qts,isurf,svs,obl,oblav,&
-                                  thvs_patch,lhetero,qskin
+                                  thvs_patch,lhetero,qskin,z0misurf5,z0hisurf5,z0qisurf5
     use modsurface,        only : surface,qtsurf,dthldz,ps
     use modboundary,       only : boundary
     use modmpi,            only : slabsum,myid,comm3d,mpierr,my_real
@@ -428,7 +428,7 @@ contains
         if (ltestbed) then
 
           write(*,*) 'readinitfiles: testbed mode: profiles for initialization obtained from scm_in.nc'
-          
+
           do k=1,kmax
             height (k) = zf(k)
             thlprof(k) = tb_thl(1,k)
@@ -443,7 +443,7 @@ contains
           !thls
           !wtsurf
           !wqsurf
-         
+
         else
 
           open (ifinput,file='prof.inp.'//cexpnr)
@@ -460,7 +460,7 @@ contains
                 vprof  (k), &
                 e12prof(k)
           end do
-        
+
           close(ifinput)
 
         end if   !ltestbed
@@ -583,7 +583,7 @@ contains
         tsoilm = tsoil
         phiwm  = phiw
         Wlm    = Wl
-      case(2)
+      case(2,5)
         tskin  = thls
       case(3,4)
         thls = thlprof(1)
@@ -597,7 +597,10 @@ contains
       ! Set initial Obukhov length to -0.1 for iteration
       obl   = -0.1
       oblav = -0.1
-
+      ! set inital z0 values to -1 for iteration
+      z0misurf5 = -1
+      z0hisurf5 = -1
+      z0qisurf5 = -1
       call qtsurf
 
       dthldz = (thlprof(1) - thls)/zf(1)
@@ -714,7 +717,7 @@ contains
       if (ltestbed) then
 
           write(*,*) 'readinitfiles: testbed mode: profiles for ls forcing obtained from scm_in.nc'
-          
+
           do k=1,kmax
             height (k) = zf(k)
             ug     (k) = tb_ug(1,k)
@@ -725,7 +728,7 @@ contains
             dqtdtls(k) = tb_qtadv(1,k)
             thlpcar(k) = tb_thladv(1,k)
           end do
-         
+
       else
 
         open (ifinput,file='lscale.inp.'//cexpnr)
@@ -828,7 +831,8 @@ contains
 
     use modsurfdata, only : ustar,thlflux,qtflux,svflux,dthldz,dqtdz,ps,thls,qts,thvs,oblav,&
                            tsoil,phiw,tskin,Wl,isurf,ksoilmax,Qnet,swdavn,swuavn,lwdavn,lwuavn,nradtime,&
-                           obl,xpatches,ypatches,ps_patch,thls_patch,qts_patch,thvs_patch,oblpatch,lhetero,qskin
+                           obl,xpatches,ypatches,ps_patch,thls_patch,qts_patch,thvs_patch,oblpatch,lhetero,qskin,&
+                           z0misurf5,z0hisurf5,z0qisurf5
     use modraddata, only: iradiation,useMcICA, tnext_radiation => tnext, &
                           thlprad,swd,swu,lwd,lwu,swdca,swuca,lwdca,lwuca,swdir,swdif,lwc,&
                           SW_up_TOA,SW_dn_TOA,LW_up_TOA,LW_dn_TOA,&
@@ -908,7 +912,11 @@ contains
       read(ifinput)  ((LW_up_ca_TOA (i,j ),i=1,i2),j=1,j2)
       read(ifinput)  ((LW_dn_ca_TOA (i,j ),i=1,i2),j=1,j2)
 !!!!! end of radiation quantities
-
+      if(isurf == 5) then
+        read(ifinput)    z0misurf5
+        read(ifinput)    z0hisurf5
+        read(ifinput)    z0qisurf5
+      end if
       if(lhetero) then
         read(ifinput)   ((ps_patch  (i,j),i=1,xpatches),j=1,ypatches)
         read(ifinput)   ((thls_patch(i,j),i=1,xpatches),j=1,ypatches)
@@ -926,7 +934,6 @@ contains
       read(ifinput) (((svflux(i,j,n),i=1,i2),j=1,j2),n=1,nsv)
       read(ifinput) (dsv(n),n=1,nsv)
       read(ifinput)  timee
-      close(ifinput)
     end if
 
     if (isurf == 1) then
@@ -962,7 +969,7 @@ contains
     if (rk3Step/=3) return
 
     if (timee<tnextrestart) dt_lim = min(dt_lim,tnextrestart-timee)
-    
+
     ! if trestart > 0, write a restartfile every trestart seconds and at the end
     ! if trestart = 0, write restart files only at the end of the simulation
     ! if trestart < 0, don't write any restart files
@@ -977,7 +984,8 @@ contains
   subroutine do_writerestartfiles
     use modsurfdata,only: ustar,thlflux,qtflux,svflux,dthldz,dqtdz,ps,thls,qts,thvs,oblav,&
                           tsoil,phiw,tskin,Wl,ksoilmax,isurf,ksoilmax,Qnet,swdavn,swuavn,lwdavn,lwuavn,nradtime,&
-                          obl,xpatches,ypatches,ps_patch,thls_patch,qts_patch,thvs_patch,oblpatch,lhetero,qskin
+                          obl,xpatches,ypatches,ps_patch,thls_patch,qts_patch,thvs_patch,oblpatch,lhetero,qskin,&
+                          z0misurf5,z0hisurf5,z0qisurf5
     use modraddata, only: iradiation,useMcICA, tnext_radiation => tnext, &
                           thlprad,swd,swu,lwd,lwu,swdca,swuca,lwdca,lwuca,swdir,swdif,lwc,&
                           SW_up_TOA,SW_dn_TOA,LW_up_TOA,LW_dn_TOA,&
@@ -992,7 +1000,7 @@ contains
     integer i,j,k,n
     character(50) name,linkname
 
-    
+
       ihour = floor(rtimee/3600)
       imin  = floor((rtimee-ihour * 3600) /3600. * 60.)
       name = 'initdXXXhXXmXXXXXXXX.XXX'
@@ -1056,7 +1064,11 @@ contains
       write(ifoutput)  ((LW_up_ca_TOA (i,j ),i=1,i2),j=1,j2)
       write(ifoutput)  ((LW_dn_ca_TOA (i,j ),i=1,i2),j=1,j2)
 !!!!! end of radiation quantities
-
+      if (isurf == 5) then
+        write (ifoutput)  z0misurf5
+        write (ifoutput)  z0hisurf5
+        write (ifoutput)  z0qisurf5
+      end if
       if(lhetero) then
         write(ifoutput)  ((ps_patch  (i,j),i=1,xpatches),j=1,ypatches)
         write(ifoutput)  ((thls_patch(i,j),i=1,xpatches),j=1,ypatches)
@@ -1189,7 +1201,7 @@ contains
             j >= js .and. j <= je) then
             if (.not. negval) then ! Avoid non-physical negative values
               field(i-is+2,j-js+2,klev) = field(i-is+2,j-js+2,klev) + (ran-0.5)*2.0*min(ampl,field(i-is+2,j-js+2,klev))
-            else 
+            else
               field(i-is+2,j-js+2,klev) = field(i-is+2,j-js+2,klev) + (ran-0.5)*2.0*ampl
             endif
 

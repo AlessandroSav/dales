@@ -57,7 +57,7 @@ SAVE
   real :: dlwtop     = 74.               !< longwave radiative flux divergence at top of domain
   real :: dlwbot     = 0.                !< longwave radiative flux divergence near the surface
   real :: sw0        = 1368.22           !< Solar constant (in W/m2). SWD at TOA = sw0*cos(mu)
-                                         !< NOTE: when using delta-Eddington (iradiation=2) this represents the downwelling solar 
+                                         !< NOTE: when using delta-Eddington (iradiation=2) this represents the downwelling solar
                                          !        radiation at the top of the domain/cloud
 
   real :: gc         = 0.85              !< asymmetry factor of droplet scattering angle distribution
@@ -195,24 +195,40 @@ contains
 !< \param xlat Latitude of the domain
 !< \param xlon Longitude of the domain
   real function zenith(time, xday, xlat,xlon)
+  
+    ! Based on: Paltridge, G. W. and Platt, C. M. R. (1976).
+    ! Radiative Processes in Meteorology and Climatology.
+    ! Elsevier, New York, 318 pp.
+
     use modglobal, only : pi
-!     implicit none
+
     real, intent(in) :: time, xday, xlat, xlon
-    real :: phi,el,obliq,xlam,declin,hora
-    real :: day,daytime
+    real :: phi,el,decl_angle,a1,a2,a3,hour_solar_time,hour_angle
+    real :: day,doy_pi,daytime
 
     if (.not.lCnstZenith) then
-      day    = xday + floor(time/86400.)
+      day    = xday - 1                       ! DOY in IFS code is zero based
+      doy_pi = 2 * pi  * day / 365            ! DOY in range (0,2pi)
       daytime= mod(time,86400.)
 
+      decl_angle = 0.006918 - 0.399912 * cos(doy_pi) + 0.070257 * sin(doy_pi) -0.006758 * cos(2*doy_pi) &
+                   + 0.000907 * sin(2*doy_pi) -0.002697 * cos(3*doy_pi) + 0.00148  * sin(3*doy_pi)
+
+      ! hour angle in radians, using true solar time
+      a1 = (1.00554 * xday -  6.28306) * pi/180
+      a2 = (1.93946 * xday + 23.35089) * pi/180
+      a3 = (7.67825 * sin(a1) + 10.09176 * sin(a2)) / 60.
+
+      ! lat/lon in radians
       phi    = xlat * pi/180.
       el     = xlon * pi/180.
-      obliq  = 23.45 * pi/180.
-      xlam   = 4.88 + 0.0172 * day
-      declin = asin(sin(obliq)*sin(xlam))
-      hora   = el-pi + 2.*pi*(daytime/86400.)
-      zenith = max(0.,sin(declin)*sin(phi)+cos(declin)*cos(phi)* &
-                                                         cos(hora))
+
+      hour_solar_time = (daytime/3600) - a3 + el * (180/pi/15)
+      hour_angle = (hour_solar_time - 12) * 15 * (pi/180)
+
+      ! Cosine of solar zenith angle
+      zenith = sin(phi) * sin(decl_angle) + cos(phi) * cos(decl_angle) * cos(hour_angle)
+
     else
       zenith = cos(cnstZenith*pi/180.)
     end if

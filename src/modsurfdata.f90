@@ -299,5 +299,18 @@ SAVE
   real              :: LAI_land(max_lands)         = -1 !< Leaf area index vegetation [-]
   real              :: gD_land(max_lands)          = -1 !< Response factor vegetation to vapor pressure deficit [-]
   real, allocatable :: oblpatch(:,:)                    !<  Obukhov length [m]
-
+  ! variables required for isurf=5
+  real              :: z0misurf5
+  real              :: z0hisurf5
+  real              :: z0qisurf5
+  real              :: Cm_isurf5  = -1
+  real              :: Ch_isurf5  = -1
+  real              :: Cq_isurf5  = -1
+  real, allocatable :: rah      (:,:)   !< Aerodynamic resistance for heat [s/m]
+  real, allocatable :: raq      (:,:)   !< Aerodynamic resistance for moisture [s/m]
+  real              :: alpha    = 0.018         !< for Charnock calculation
+  real              :: am       = 0.11          !< for Charnock calculation
+  real              :: ah       = 0.40          !< for Charnock calculation
+  real              :: aq       = 0.62          !< for Charnock calculation
+  real              :: nu       = 1.5e-5        !< for Charnock calculation
 end module modsurfdata
