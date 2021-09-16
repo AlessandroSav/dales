@@ -384,7 +384,7 @@ contains
                                   ijtot,cu,cv,e12min,dzh,cexpnr,ifinput,lwarmstart,ltotruntime,itrestart,&
                                   trestart, ladaptive,llsadv,tnextrestart,longint
     use modsubgrid,        only : ekm,ekh
-   use modsurfdata,       only : wsvsurf, &
+    use modsurfdata,       only : wsvsurf, &
                                   thls,tskin,tskinm,tsoil,tsoilm,phiw,phiwm,Wl,Wlm,thvs,qts,isurf,svs,obl,oblav,&
                                   thvs_patch,lhetero,qskin,z0misurf5,z0hisurf5,z0qisurf5
     use modsurface,        only : surface,qtsurf,dthldz,ps
@@ -935,6 +935,7 @@ contains
       read(ifinput) (dsv(n),n=1,nsv)
       read(ifinput)  timee
     end if
+    close(ifinput)
 
     if (isurf == 1) then
       name(5:5) = 'l'
