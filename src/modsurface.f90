@@ -943,6 +943,7 @@ contains
             tskin(i,j) = thls_patch(patchxnr(i),patchynr(j))
           else
             if(lhetero_sfc_temp) then
+               thls_hetero    (i,j) = thls + dthls_hetero    (i,j)
                tskin(i,j) = thls_hetero (i,j) !this is the potential temperature 
             else
                tskin(i,j) = thls

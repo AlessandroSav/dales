@@ -466,10 +466,11 @@ contains
     wqsurf = wqsurft(t) + fac * ( wqsurft(t+1) - wqsurft(t)  )
     wtsurf = wtsurft(t) + fac * ( wtsurft(t+1) - wtsurft(t)  )
     thls   = thlst(t)   + fac * ( thlst(t+1)   - thlst(t)    )
-    if(lhetero_sfc_temp) then 
-      thls_hetero    (i,j) = thls + dthls_hetero    (i,j)
-      tskin (i,j) = thls_hetero (i,j) ! maybe not needed because already in modsurface. In subroutine qtsurf the variable tskin is used, but tskin has not yet been updated to thls
-    endif    
+    ! (i,j) are not defined
+    !if(lhetero_sfc_temp) then 
+    !  thls_hetero    (i,j) = thls + dthls_hetero    (i,j)
+    !  tskin (i,j) = thls_hetero (i,j) ! maybe not needed because already in modsurface. In subroutine qtsurf the variable tskin is used, but tskin has not yet been updated to thls
+    !endif    
     ps     = pst(t)     + fac * ( pst(t+1)   - pst(t)    )
     Qnetav = Qnetavt(t) + fac * ( Qnetavt(t+1) - Qnetavt(t)  )
 !cstep: not necessary to provide qts in ls_flux file qts    = qtst(t)    + fac * ( qtst(t+1)    - qtst(t)     )
