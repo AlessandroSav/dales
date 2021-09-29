@@ -284,6 +284,10 @@ contains
       end if
     end if
 
+    if (lhetero_sfc_temp) then
+      allocate(tskin_patch   (xpatches,ypatches))
+    end if
+
     if (lhetero) then
       allocate(zbase_field  (2:i1,2:j1))
       allocate(ztop_field   (2:i1,2:j1))
@@ -384,6 +388,10 @@ contains
     end if
     tnext = tnext+idtav
     dt_lim = minval((/dt_lim,tnext-timee/))
+
+    if (lhetero_sfc_temp) then
+      tskin_patch    = 0
+    end if
 
     if (lhetero) then
       zbase_field    = 0
@@ -750,6 +758,10 @@ contains
       rsvegav       = rsvegav     / ijtot
       rssoilav      = rssoilav    / ijtot
       tskinav       = tskinav     / ijtot
+
+      if (lhetero_sfc_temp) then
+        tskin_patch    = patchsum_1level(tskin   (2:i1, 2:j1)) * (xpatches*ypatches/ijtot)
+      end if
 
       if (lhetero) then
         Qnet_patch     = patchsum_1level(Qnet    (2:i1, 2:j1)) * (xpatches*ypatches/ijtot)
@@ -1165,6 +1177,10 @@ contains
     implicit none
 
     if(ltimestat .and. lnetcdf .and. myid==0) call exitstat_nc(ncid)
+
+    if () then
+      deallocate(tskin_patch   )
+    end if
 
     if (lhetero) then
       deallocate(zbase_field  )

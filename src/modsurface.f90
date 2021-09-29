@@ -951,8 +951,7 @@ contains
           endif
         end do
       end do
-      ! delete next print statement once it works
-      print *, 'Alessandro - tskin(2,2)', tskin(2,2)
+
       call qtsurf
 
     end if
