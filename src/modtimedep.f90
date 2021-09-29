@@ -447,7 +447,7 @@ contains
 
   subroutine timedepsurf
     use modglobal,   only : rtimee, lmoist
-    use modsurfdata, only : wtsurf,wqsurf,thls,qts,ps, Qnetav, lhetero_sfc_temp, dthl_hetero, tskin
+    use modsurfdata, only : wtsurf,wqsurf,thls,qts,ps, Qnetav, lhetero_sfc_temp, dthls_hetero, thls_hetero, tskin
     use modsurface,  only : qtsurf
     implicit none
     integer t
@@ -467,7 +467,7 @@ contains
     wtsurf = wtsurft(t) + fac * ( wtsurft(t+1) - wtsurft(t)  )
     thls   = thlst(t)   + fac * ( thlst(t+1)   - thlst(t)    )
     if(lhetero_sfc_temp) then 
-      thls_hetero    (i,j) = thls + dthl_hetero    (i,j)
+      thls_hetero    (i,j) = thls + dthls_hetero    (i,j)
       tskin (i,j) = thls_hetero (i,j) ! maybe not needed because already in modsurface. In subroutine qtsurf the variable tskin is used, but tskin has not yet been updated to thls
     endif    
     ps     = pst(t)     + fac * ( pst(t+1)   - pst(t)    )
