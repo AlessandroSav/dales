@@ -447,7 +447,7 @@ contains
 
   subroutine timedepsurf
     use modglobal,   only : rtimee, lmoist
-    use modsurfdata, only : wtsurf,wqsurf,thls,qts,ps, Qnetav, lhetero_sfc_temp, dthls_hetero, thls_hetero, tskin
+    use modsurfdata, only : wtsurf,wqsurf,thls,qts,ps, Qnetav !, lhetero_sfc_temp, dthls_hetero, thls_hetero, tskin
     use modsurface,  only : qtsurf
     implicit none
     integer t
