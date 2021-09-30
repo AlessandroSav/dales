@@ -123,6 +123,7 @@ contains
         call writestat_dims_nc(ncid, ncoarse)
       end if
      call define_nc( ncid, NVar, ncname)
+     write (6,*) 'finished initialization of fielddump output fields'
     end if
 
   end subroutine initfielddump
@@ -284,7 +285,14 @@ contains
     enddo
     enddo
 
-    if (lnetcdf) vars(:,:,1,8) = tskin(2:i1:ncoarse,2:j1:ncoarse)
+    write (6,*) 'prepare tskin output'
+    !if (lnetcdf) vars(:,:,1,8) = tskin(2:i1:ncoarse,2:j1:ncoarse)
+    do i=2,i1,ncoarse
+    do j=2,j1,ncoarse
+       vars(i,j,1,8) = tskin (i,j)
+    enddo
+    enddo
+    write (6,*) 'tskin data put in array'
 
     if (lbinary) then
       if (ldiracc) then
