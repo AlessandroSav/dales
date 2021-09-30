@@ -1166,10 +1166,6 @@ contains
 
     if(ltimestat .and. lnetcdf .and. myid==0) call exitstat_nc(ncid)
 
-    if () then
-      deallocate(tskin_patch   )
-    end if
-
     if (lhetero) then
       deallocate(zbase_field  )
       deallocate(ztop_field   )
