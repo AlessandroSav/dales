@@ -236,6 +236,9 @@ contains
         if (isurf == 5) then
           nvar = 24
         end if
+        if (lhetero_sfc_temp) then
+          nvar = 23
+        endif
         allocate(ncname(nvar,4))
 
         fname(7:9) = cexpnr
