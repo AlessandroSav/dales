@@ -360,7 +360,7 @@ contains
                            Qnet, H, LE, G0, rs, ra, tskin, tendskin, &
                            cliq,rsveg,rssoil,Wl, &
                            lhetero, xpatches, ypatches, qts_patch, wt_patch, wq_patch, thls_patch,obl,z0mav_patch, wco2av, Anav, Respav,gcco2av,&
-                           z0misurf5,z0hisurf5,z0qisurf5
+                           z0misurf5,z0hisurf5,z0qisurf5, lhetero_sfc_temp
     use modsurface, only : patchxnr,patchynr
     use mpi
     use modmpi,     only : my_real,mpi_sum,mpi_max,mpi_min,comm3d,mpierr,myid
