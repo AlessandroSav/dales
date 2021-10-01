@@ -264,6 +264,7 @@ contains
         if (lhetero_sfc_temp) then
           call ncinfo(ncname(22,:),'tskin_1','SST at grid (2,2) ','K','time')
           call ncinfo(ncname(23,:),'tskin_2','SST at grid (-1,-1)','K','time')
+        end if
 
         if(isurf==1) then
           call ncinfo(ncname(22,:),'Qnet','Net radiation','W/m^2','time')
@@ -859,6 +860,7 @@ contains
         if (lhetero_sfc_temp) then
           vars(22) = tskin(2,2)
           vars(23) = tskin(i1,j1)
+        end if
         if (isurf == 1) then
           vars(22) = Qnetav
           vars(23) = Hav
