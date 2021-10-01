@@ -85,7 +85,7 @@ contains
     use modglobal, only : ifnamopt, fname_options,cexpnr,dtmax,ifoutput,dtav_glob,tres,&
                           ladaptive,k1,kmax,rd,rv,dt_lim,btime,i1,j1,lwarmstart,checknamelisterror
     use modfields, only : thlprof,qtprof,svprof
-    use modsurfdata, only : isurf, lhetero, xpatches, ypatches
+    use modsurfdata, only : isurf, lhetero, xpatches, ypatches, lhetero_sfc_temp
     use modstat_nc, only : lnetcdf, open_nc, define_nc, ncinfo, nctiminfo
     implicit none
     integer :: ierr,k,location = 1
@@ -260,6 +260,10 @@ contains
         call ncinfo(ncname(19,:),'wtheta','Surface kinematic temperature flux','K m/s','time')
         call ncinfo(ncname(20,:),'wthetav','Surface kinematic virtual temperature flux','K m/s','time')
         call ncinfo(ncname(21,:),'wq','Surface kinematic moisture flux','kg/kg m/s','time')
+
+        if (lhetero_sfc_temp) then
+          call ncinfo(ncname(22,:),'tskin_1','SST at grid (2,2) ','K','time')
+          call ncinfo(ncname(23,:),'tskin_2','SST at grid (-1,-1)','K','time')
 
         if(isurf==1) then
           call ncinfo(ncname(22,:),'Qnet','Net radiation','W/m^2','time')
@@ -852,6 +856,9 @@ contains
         vars(19) = wts
         vars(20) = wthvs
         vars(21) = wqls
+        if (lhetero_sfc_temp) then
+          vars(22) = tskin(2,2)
+          vars(23) = tskin(i1,j1)
         if (isurf == 1) then
           vars(22) = Qnetav
           vars(23) = Hav
