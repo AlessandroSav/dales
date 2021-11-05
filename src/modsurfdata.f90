@@ -315,9 +315,9 @@ SAVE
   real              :: Cq_isurf5  = -1
   real, allocatable :: rah      (:,:)   !< Aerodynamic resistance for heat [s/m]
   real, allocatable :: raq      (:,:)   !< Aerodynamic resistance for moisture [s/m]
-  real              :: alpha    = 0.018         !< for Charnock calculation
+  real              :: alpha    = 0.018         !< depends on the (ocean-wave) sea state (Janssen, 1991), values range from 0.01 to 0.04.
   real              :: am       = 0.11          !< for Charnock calculation
   real              :: ah       = 0.40          !< for Charnock calculation
   real              :: aq       = 0.62          !< for Charnock calculation
-  real              :: nu       = 1.5e-5        !< for Charnock calculation
+  real              :: nu       = 1.5e-5        !< kinematic viscosity [m2/s]
 end module modsurfdata
