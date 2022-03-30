@@ -87,7 +87,7 @@ subroutine initsamptend
     if (lsampcl) then
       isamptot = isamptot + 1
       samplname(isamptot) = 'cld'
-      longsamplname(isamptot) = 'Cloud '
+      longsamplname(isamptot) = 'Cloud ' !Alessandro: we use this flag for downdrafts 
     end if
     if (lsampco) then
       isamptot = isamptot + 1
@@ -401,7 +401,11 @@ subroutine initsamptend
           do i=2,i1
           do j=2,j1
           do k=1,kmax
-            if (ql0(i,j,k)>epsilon(1.0)) then
+            ! if (ql0(i,j,k)>epsilon(1.0)) then
+            !     tendmask(i,j,k,isamp) = .true.
+            ! endif
+            ! Alessandro: quick dirty modification to sample downdrafts
+            if (w0f(i,j,k)<-0.5) then
                 tendmask(i,j,k,isamp) = .true.
             endif
           enddo
@@ -583,7 +587,11 @@ subroutine initsamptend
           do i=2,i1
           do j=2,j1
           do k=1,kmax
-            if (ql0(i,j,k)>epsilon(1.0)) then
+            ! if (ql0(i,j,k)>epsilon(1.0)) then
+            !     tendmask(i,j,k,isamp) = .true.
+            ! endif
+            ! Alessandro: quick dirty modification to sample downdrafts
+            if (w0f(i,j,k)<-0.5) then
                 tendmask(i,j,k,isamp) = .true.
             endif
           enddo
