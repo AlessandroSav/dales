@@ -238,20 +238,7 @@ contains
         write (ifoutput) (((field(i,j,k),i=2,i1, ncoarse),j=2,j1, ncoarse),k=klow,khigh)
       end if
       close (ifoutput)
-    end if
-
-    field = NINT(1.0E5*p,2)
-    if (lnetcdf) vars(:,:,:,8) = p(2:i1:ncoarse,2:j1:ncoarse,klow:khigh)
-    if (lbinary) then
-      if (ldiracc) then
-        open (ifoutput,file='wbpp.'//cmyidx//'.'//cmyidy//'.'//cexpnr,access='direct', form='unformatted', recl=reclength)
-        write (ifoutput, rec=writecounter) field(2:i1:ncoarse,2:j1:ncoarse,klow:khigh)
-      else
-        open  (ifoutput,file='wbpp.'//cmyidx//'.'//cmyidy//'.'//cexpnr,form='unformatted',position='append')
-        write (ifoutput) (((field(i,j,k),i=2,i1, ncoarse),j=2,j1, ncoarse),k=klow,khigh)
-      end if
-      close (ifoutput)
-    end if
+    end if    
 
     if(imicro/=imicro_none) then
       do i=2-ih,i1+ih
@@ -309,6 +296,7 @@ contains
       close (ifoutput)
     endif
 
+    if (lnetcdf) vars(:,:,:,8) = p(2:i1:ncoarse,2:j1:ncoarse,klow:khigh)
     if (lnetcdf) vars(:,:,:,9:nvar) = sv0(2:i1:ncoarse,2:j1:ncoarse,klow:khigh,:)
 
     if(lnetcdf) then
