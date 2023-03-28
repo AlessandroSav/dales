@@ -34,7 +34,7 @@ private
 PUBLIC :: initfielddump, fielddump,exitfielddump
 save
 !NetCDF variables
-  integer :: nvar = 8
+  integer :: nvar = 7
   integer :: ncid,nrec = 0
   character(80) :: fname = 'fielddump.xxx.xxx.xxx.nc'
   character(80),dimension(:,:), allocatable :: ncname
@@ -112,7 +112,6 @@ contains
       call ncinfo(ncname( 6,:),'thl','Liquid water potential temperature above 300K','K','tttt')
 !       call ncinfo(ncname( 7,:),'qr','Rain water mixing ratio','1e-5kg/kg','tttt')
       call ncinfo(ncname( 7,:),'buoy','Buoyancy','K','tttt')
-      call ncinfo(ncname( 8,:),'p','Pressure perturbation from poisson solver','Pa','tttt')
       do n=1,nsv
         write (csvname(1:3),'(i3.3)') n
         call ncinfo(ncname(7+n,:),'sv'//csvname,'Scalar '//csvname//' specific concentration','(kg/kg)','tttt')
@@ -136,7 +135,6 @@ contains
     use modmpi,    only : myid,cmyidx, cmyidy
     use modstat_nc, only : lnetcdf, writestat_nc
     use modmicrodata, only : iqr, imicro, imicro_none
-    use modpois, only : p
     implicit none
 
     integer(KIND=selected_int_kind(4)), allocatable :: field(:,:,:)
@@ -238,7 +236,7 @@ contains
         write (ifoutput) (((field(i,j,k),i=2,i1, ncoarse),j=2,j1, ncoarse),k=klow,khigh)
       end if
       close (ifoutput)
-    end if    
+    end if
 
     if(imicro/=imicro_none) then
       do i=2-ih,i1+ih
@@ -296,8 +294,7 @@ contains
       close (ifoutput)
     endif
 
-    if (lnetcdf) vars(:,:,:,8) = p(2:i1:ncoarse,2:j1:ncoarse,klow:khigh)
-    if (lnetcdf) vars(:,:,:,9:nvar) = sv0(2:i1:ncoarse,2:j1:ncoarse,klow:khigh,:)
+    if (lnetcdf) vars(:,:,:,8:nvar) = sv0(2:i1:ncoarse,2:j1:ncoarse,klow:khigh,:)
 
     if(lnetcdf) then
       call writestat_nc(ncid,1,tncname,(/rtimee/),nrec,.true.)
