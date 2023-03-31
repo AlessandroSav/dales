@@ -297,7 +297,7 @@ contains
     endif
 
     if (lnetcdf) vars(:,:,:,8) = p(2:i1:ncoarse,2:j1:ncoarse,klow:khigh)
-    if (lnetcdf) vars(:,:,:,nvar:nvar+nsv) = sv0(2:i1:ncoarse,2:j1:ncoarse,klow:khigh,:)
+    if (lnetcdf) vars(:,:,:,nvar-nsv:nvar) = sv0(2:i1:ncoarse,2:j1:ncoarse,klow:khigh,:)
 
     if(lnetcdf) then
       call writestat_nc(ncid,1,tncname,(/rtimee/),nrec,.true.)
